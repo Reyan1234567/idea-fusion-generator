@@ -1,0 +1,40 @@
+import { cleanerFunciton, iteratePosts } from "@/utils/reddit";
+import { NextRequest, NextResponse } from "next/server";
+
+// const postUrl = "https://www.reddit.com/r/startups/top.json?limit=10&t=week";
+const getPosts = async (subreddit: string | null, time: string | null) => {
+  try {
+    console.debug("subreddit: ", subreddit);
+    if (!subreddit) throw new Error("Subreddit is a required field");
+    const res = await fetch(
+      `https://www.reddit.com/r/${subreddit}/top.json?limit=5&t=${time ?? 7}`
+    );
+    return res.json();
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+};
+
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const subreddit = searchParams.get("subreddit");
+    const time = searchParams.get("time");
+
+    const response = await getPosts(subreddit, time);
+    const realRes = await iteratePosts(response);
+    return NextResponse.json(realRes, { status: 200 });
+  } catch (e) {
+    console.error(e);
+    if (e instanceof Error) {
+      return NextResponse.json(e?.message, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { message: "Some error occured" },
+        { status: 500 }
+      );
+    }
+  }
+}
+
