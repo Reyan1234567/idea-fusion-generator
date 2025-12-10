@@ -3,7 +3,7 @@ type comments = {
   replies: comments[] | null;
 };
 
-type cleanedType = {
+export type cleanedType = {
   posts: string; 
   comments: comments[];
 };
@@ -100,5 +100,3 @@ export const iteratePosts = async (posts: any) => {
   return res;
 };
 
-
-const 

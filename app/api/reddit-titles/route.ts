@@ -1,4 +1,5 @@
-import { cleanerFunciton, iteratePosts } from "@/utils/reddit";
+import { getStructuredJson, listOfIdeas } from "@/utils/deepseek";
+import { iteratePosts } from "@/utils/reddit";
 import { NextRequest, NextResponse } from "next/server";
 
 // const postUrl = "https://www.reddit.com/r/startups/top.json?limit=10&t=week";
@@ -23,8 +24,18 @@ export async function GET(request: NextRequest) {
     const time = searchParams.get("time");
 
     const response = await getPosts(subreddit, time);
+    console.log("Response");
+    console.log(response);
     const realRes = await iteratePosts(response);
-    return NextResponse.json(realRes, { status: 200 });
+    console.log("RealRes");
+    console.log(realRes);
+    const realRealRes = await getStructuredJson(realRes);
+    console.log("RealRealRes");
+    console.log(realRealRes);
+    const idea = await listOfIdeas(realRealRes);
+    console.log("idea");
+    console.log(idea);
+    return NextResponse.json(idea, { status: 200 });
   } catch (e) {
     console.error(e);
     if (e instanceof Error) {
@@ -37,4 +48,3 @@ export async function GET(request: NextRequest) {
     }
   }
 }
-
