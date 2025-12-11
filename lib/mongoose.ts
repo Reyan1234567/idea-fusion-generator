@@ -9,11 +9,12 @@ const mongoURI = process.env.NEXT_PUBLIC_MONGODB_STRING;
 
 export const connectDB = async () => {
   try {
-    if(!mongoURI){
-      throw new Error("can't find mongoURI")
+    if (!mongoURI) {
+      throw new Error("can't find mongoURI");
     }
-    await mongoose.connect(mongoURI);
+    const dbConnect=await mongoose.connect(mongoURI);
     console.log("MongoDB connection successful!");
+    return dbConnect
   } catch (err) {
     console.error("MongoDB connection error:", err);
 
@@ -38,3 +39,8 @@ process.on("SIGINT", () => {
   console.log("process end");
   process.exit(0);
 });
+
+export const dbClient = async () => {
+  const db=await connectDB();
+  return db.connection.getClient().db("idea-fusion-generator")
+};
