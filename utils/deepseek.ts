@@ -1,4 +1,3 @@
-import { Description } from "@radix-ui/react-dialog";
 import { cleanedType } from "./reddit";
 import { GoogleGenAI } from "@google/genai";
 
@@ -17,8 +16,14 @@ export const getStructuredJson = async (
         items: {
           type: "object",
           properties: {
-            title: { type: "string", description:"a descriptive title about the problem" },
-            description: { type: "string", description:" a detailed explanation of what the problem is" },
+            title: {
+              type: "string",
+              description: "a descriptive title about the problem",
+            },
+            description: {
+              type: "string",
+              description: " a detailed explanation of what the problem is",
+            },
           },
         },
       },
@@ -57,6 +62,8 @@ export const getStructuredJson = async (
     });
 
     // The model ensures response.text is valid JSON based on the schema
+    console.log("Problems");
+    console.log(response);
     return JSON.parse(response.text ?? "something went wrong!");
   } catch (error) {
     // A common error for large input is 'ResourceExhausted' (Context is too long)
@@ -71,9 +78,12 @@ export const getStructuredJson = async (
 };
 
 // Simple chat
-export const listOfIdeas = async (problemsJSON: {
-  problems: { title: string; description: string }[];
-}) => {
+export const listOfIdeas = async (
+  problemsJSON: {
+    problems: { title: string; description: string }[];
+  },
+  message: string
+) => {
   const stringifiedJson = JSON.stringify(problemsJSON);
   const structuredJson = {
     type: "object",
@@ -85,9 +95,20 @@ export const listOfIdeas = async (problemsJSON: {
           type: "object",
           properties: {
             name: { type: "string", description: "the name of the product" },
-            description: { type: "string", description: "a detailed description of what the product do, and what problem it  solves and how it does that" },
-            targetAudience: { type: "string", description: "the target audience that could use the product" },
-            feasibility: { type: "string", description: "feasibility of the product rated from 1-10, and the reason for the rating" },
+            description: {
+              type: "string",
+              description:
+                "a detailed description of what the product do, and what problem it  solves and how it does that",
+            },
+            targetAudience: {
+              type: "string",
+              description: "the target audience that could use the product",
+            },
+            feasibility: {
+              type: "string",
+              description:
+                "feasibility of the product rated from 1-10, and the reason for the rating",
+            },
           },
         },
       },
@@ -100,8 +121,10 @@ export const listOfIdeas = async (problemsJSON: {
   --- DATA END ---
 
   TASK:
-  Using the structured problems provided above, generate 10 tech ideas, apps, tools, or AI products that solve or improve these issues.
-
+  Using the structured problems provided above, generate tech ideas, apps, tools, or AI products that solve or improve these issues.
+  --START OF SPECIFIC INSTRUCTION--
+  ${message}
+  --END OF SPECIFIC INSTRUCTION--
   Each generated problem MUST strictly adhere to the required JSON schema for the output.`;
   try {
     const response = await ai.models.generateContent({
@@ -122,7 +145,11 @@ export const listOfIdeas = async (problemsJSON: {
       },
     });
     // The model ensures response.text is valid JSON based on the schema
-    return JSON.parse(response?.text?.replace(/[\u0000-\u001F\u007F]/g, '') ?? "something went wrong!");
+    console.log(response.text);
+    return JSON.parse(
+      response?.text?.replace(/[\u0000-\u001F\u007F]/g, "") ??
+        "something went wrong!"
+    );
   } catch (error) {
     // A common error for large input is 'ResourceExhausted' (Context is too long)
     console.error("API Call failed:", error);
@@ -133,4 +160,3 @@ export const listOfIdeas = async (problemsJSON: {
     throw error;
   }
 };
-
