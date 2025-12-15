@@ -29,6 +29,6 @@ export async function PATCH(
     return editChat;
   } catch (e) {
     console.log(e);
-    return NextResponse.json({ message: "Couldn't add message", status: 500 });
+    return NextResponse.json({ error: "Couldn't add message", status: 500 });
   }
 }

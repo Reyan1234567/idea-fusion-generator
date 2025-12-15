@@ -10,30 +10,25 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { signupUser } from "@/lib/signup.actions";
+import { toast } from "sonner";
 
-type Props = {
-  onSubmit?: (payload: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-  }) => void;
-  onGoogleSignIn?: () => void;
-  loading?: boolean;
-};
-
-export default function SignUp({ onSubmit, onGoogleSignIn, loading }: Props) {
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loading) return;
-    onSubmit?.({ firstName, lastName, email, password });
-  };
+export default function SignUp() {
+  const [state, formAction, isPending] = React.useActionState(signupUser, {
+    message: "",
+  });
+  React.useEffect(() => {
+    if (state.success === true) {
+      toast.info("Email sent", {
+        description: "Check your Emails and Verify your account!",
+      });
+      redirect("/login");
+    } else if (state.success === false) {
+      toast.error(state.error);
+    }
+  }, [state.error, state.success]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -42,33 +37,26 @@ export default function SignUp({ onSubmit, onGoogleSignIn, loading }: Props) {
           <CardTitle>Create your account</CardTitle>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+        <CardContent className="space-y-4">
+          <form action={formAction} className="space-y-4">
+            <div className="grid gap-3">
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  First name
+                  Full name
                 </label>
                 <Input
                   type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  name="full_name"
                   placeholder="First name"
                   required
+                  minLength={2}
+                  maxLength={100}
+                  defaultValue={state.raw?.full_name}
+                  className={state.errors?.full_name ? "border-red-500" : ""}
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Last name
-                </label>
-                <Input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Last name"
-                  required
-                />
+                <p className="text-xs text-red-600">
+                  {state.errors?.full_name?.errors[0]}
+                </p>
               </div>
             </div>
 
@@ -76,80 +64,71 @@ export default function SignUp({ onSubmit, onGoogleSignIn, loading }: Props) {
               <label className="block text-sm font-medium mb-1">Email</label>
               <Input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
                 placeholder="you@company.com"
                 required
+                defaultValue={state.raw?.email}
+                className={state.errors?.email ? "border-red-500" : ""}
               />
+              <p className="text-xs text-red-600">
+                {state.errors?.email?.errors[0]}
+              </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">Password</label>
               <Input
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
                 placeholder="Create a password"
                 required
+                minLength={8}
+                defaultValue={state.raw?.password}
+                className={state.errors?.password ? "border-red-500" : ""}
               />
+              <p className="text-xs text-red-600">
+                {state.errors?.password?.errors[0]}
+              </p>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <a className="text-sm text-primary hover:underline" href="#">
-                  Already have an account?
-                </a>
-              </div>
-              <Button type="submit" className="ml-2" disabled={loading}>
-                {loading ? "Creating account..." : "Create account"}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Repeat Password
+              </label>
+              <Input
+                type="password"
+                name="repeat_password"
+                placeholder="Confirm your password"
+                required
+                minLength={8}
+                defaultValue={state.raw?.repeat_password}
+                className={
+                  state.errors?.repeat_password ? "border-red-500" : ""
+                }
+              />
+              <p className="text-xs text-red-600">
+                {state.errors?.repeat_password?.errors[0]}
+              </p>
+            </div>
+
+            <div className="flex flex-col">
+              <Button type="submit">
+                {isPending ? "Creating user" : "Create User"}
               </Button>
             </div>
-          </form>
-
-          <div className="my-4">
-            <Separator />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="outline"
-              onClick={() => onGoogleSignIn?.()}
-              className="flex items-center justify-center gap-3"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 48 48"
-                className="h-4 w-4"
-                fill="none"
-                aria-hidden
+            <div className="flex justify-center text-sm text-center gap-1">
+              <p className="text-mutxe-textreground">
+                Already have an account?{" "}
+              </p>
+              <Link
+                className="text-sm text-primary hover:underline"
+                href="/login"
               >
-                <path
-                  fill="#EA4335"
-                  d="M24 9.5c3.54 0 6.35 1.53 8.27 2.8l6.03-6.04C34.76 2.77 29.69 0 24 0 14.84 0 7.26 5.84 3.6 14.04l7.1 5.52C12.9 14.03 18.93 9.5 24 9.5z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M46.5 24.5c0-1.63-.15-2.85-.47-4.1H24v8.02h12.77c-.55 3.02-3.3 8.37-12.77 8.37-7.62 0-13.94-5.01-16.21-11.73l-7.08 5.44C6.85 42.26 14.97 48 24 48c14.11 0 22.5-9.41 22.5-23.5z"
-                />
-                <path
-                  fill="#4A90E2"
-                  d="M9.79 29.27c-1.05-3.08-1.05-6.08 0-9.16L2.71 14.67C.96 18.76.96 25.24 2.71 29.33l7.08-5.06z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M24 48c6.48 0 11.9-2.15 15.87-5.84l-7.54-5.65C29.36 37.07 26.01 38 24 38c-9.03 0-17.15-5.74-19.69-13.56L2.71 29.33C6.27 37.99 14.95 48 24 48z"
-                />
-              </svg>
-              Sign up with Google
-            </Button>
-
-            <div className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <a className="text-primary hover:underline" href="#">
-                Create one
-              </a>
+                {" "}
+                Login
+              </Link>
             </div>
-          </div>
+          </form>
         </CardContent>
 
         <CardFooter className="justify-center">

@@ -11,4 +11,4 @@ const chatSchema = new Schema({
   user_id: Schema.ObjectId,
 });
 
-export default mongoose.model("chat", chatSchema);
+export default mongoose.models.chat || mongoose.model("chat", chatSchema);

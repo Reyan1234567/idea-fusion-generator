@@ -1,23 +1,23 @@
 import mongoose from "mongoose";
 
-const mongoURI = process.env.NEXT_PUBLIC_MONGODB_STRING;
+const mongoURI = process.env.MONGODB_STRING;
 
-// const options = {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// };
+let connected = false;
 
 export const connectDB = async () => {
   try {
     if (!mongoURI) {
       throw new Error("can't find mongoURI");
     }
-    const dbConnect=await mongoose.connect(mongoURI);
+    if (connected) {
+      return;
+    }
+    const dbConnect = await mongoose.connect(mongoURI);
     console.log("MongoDB connection successful!");
-    return dbConnect
+    connected = true;
+    return dbConnect;
   } catch (err) {
     console.error("MongoDB connection error:", err);
-
     process.exit(1);
   }
 };
@@ -31,6 +31,7 @@ mongoose.connection.on("error", (err) => {
 });
 
 mongoose.connection.on("disconnected", () => {
+  connected = false;
   console.log("Mongoose default connection disconnected");
 });
 
@@ -39,8 +40,3 @@ process.on("SIGINT", () => {
   console.log("process end");
   process.exit(0);
 });
-
-export const dbClient = async () => {
-  const db=await connectDB();
-  return db.connection.getClient().db("idea-fusion-generator")
-};

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// const commentUrl = "https://www.reddit.com/r/startups/comments/1ostbi4/.json";
 const getComments = async (subreddit: string | null, postId: string | null) => {
   try {
     if (!subreddit || !postId) {
@@ -26,7 +25,7 @@ export async function GET(requet: NextRequest) {
   } catch (e) {
     console.error(e);
     return NextResponse.json({
-      message: "Some error occurend when retrieving some post",
+      error: "Some error occurend when retrieving some post",
       status: 500,
     });
   }

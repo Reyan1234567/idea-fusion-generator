@@ -1,3 +1,4 @@
+import SignoutButton from "@/components/signoutButton";
 import Image from "next/image";
 
 export default function Home() {
@@ -58,6 +59,7 @@ export default function Home() {
           >
             Documentation
           </a>
+          <SignoutButton />
         </div>
       </main>
     </div>

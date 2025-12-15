@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(e?.message, { status: 500 });
     } else {
       return NextResponse.json(
-        { message: "Internal Server Error: Failed to process ideas." },
+        { error: "Internal Server Error: Failed to process ideas." },
         { status: 500 }
       );
     }
@@ -110,7 +110,7 @@ export async function PATCH(request: NextRequest) {
     } else {
       console.log("some");
       return NextResponse.json({
-        message: "Some error occured when bookmarking",
+        error: "Some error occured when bookmarking",
         status: 500,
       });
     }

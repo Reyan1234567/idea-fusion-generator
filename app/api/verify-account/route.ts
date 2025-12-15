@@ -1,39 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import EmailVerification from "@/models/email_verifications";
 import User from "@/models/users";
+import { connectDB } from "@/lib/mongoose";
+import { BASE_URL } from "@/utils/global";
+import { convertSegmentPathToStaticExportFilename } from "next/dist/shared/lib/segment-cache/segment-value-encoding";
 
 export async function GET(request: NextRequest) {
+  await connectDB();
   const searchParams = request.nextUrl.searchParams;
-  const token = searchParams.get("token");
+  const uuid = searchParams.get("token");
   try {
-    if (!token) throw new Error("token can't be empty");
-    const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET;
-    const decodedJwt = jwt.verify(token, jwtSecret);
-    if (decodedJwt) {
-      console.log("DECODED JWT");
-      console.log(decodedJwt);
-      validateUser(decodedJwt.id);
-      return NextResponse.redirect(
-        "http://localhost:3000/redirect/success",
-        302
-      );
-    } else {
-      throw new Error("Unauthorized");
-    }
+    await validateUser(uuid);
+    return NextResponse.redirect(`${BASE_URL}/redirect?status=success`, 302);
   } catch (error) {
-    return NextResponse.json({
-      message:
-        error instanceof Error
-          ? error.message
-          : "Error related to verifying account",
-    });
+    return NextResponse.redirect(`${BASE_URL}/redirect?status=fail`, 302);
   }
 }
 
-const validateUser = async (userId: string) => {
+const validateUser = async (uuid: string | null) => {
   try {
-    await User.findByIdAndUpdate(userId, { is_verified: true });
+    if (!uuid) {
+      console.log("Can't find uuid");
+      throw new Error("Can't find uuid");
+    }
+    const emailToBeVerified = await EmailVerification.findOne({
+      secret_code: uuid,
+    });
+    console.log("EMAIL TO BE VERIFIED");
+    console.log(emailToBeVerified);
+    if (!emailToBeVerified) {
+      console.log("Email to be verified doesn't exist");
+      throw new Error("Email to be verified don't exist");
+    }
+    if (new Date() > emailToBeVerified.expires_in) {
+      throw new Error("Verification token expired!");
+    }
+    console.log(emailToBeVerified.user_id.toString());
+    const user = await User.findById(emailToBeVerified.user_id.toString());
+
+    if (!user) {
+      console.log("User don't exits");
+      throw new Error("User don't exists");
+    }
+    user.is_verified = true;
+    user.save();
+    await EmailVerification.deleteOne(emailToBeVerified);
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : "Couldn't validate user");
   }

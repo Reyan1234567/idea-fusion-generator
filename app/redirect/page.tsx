@@ -1,8 +1,5 @@
-"use client";
-
-import * as React from "react";
-import { useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+'use client'
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
   CardHeader,
@@ -14,34 +11,12 @@ import { Button } from "@/components/ui/button";
 
 export default function RedirectPage() {
   const router = useRouter();
-  const pathname = usePathname() ?? "";
   const search = useSearchParams();
 
-  const statusQuery = search?.get("status");
-
-  const segments = pathname.split("/").filter(Boolean);
-  const lastSegment = segments[segments.length - 1] ?? "";
-
-  const isSuccess =
-    lastSegment.toLowerCase() === "success" || statusQuery === "success";
-
-  useEffect(() => {
-    if (isSuccess) {
-      router.replace("/signup");
-    }
-  }, [isSuccess, router]);
+  const isSuccess = search.get("status") === "success";
 
   if (isSuccess) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center">
-          <p className="text-lg font-medium">Redirecting...</p>
-          <p className="text-sm text-muted-foreground">
-            You will be taken to the signup page shortly.
-          </p>
-        </div>
-      </div>
-    );
+    router.replace("/login");
   }
 
   return (

@@ -36,4 +36,4 @@ const ideaSchema = new Schema({
   },
 });
 
-export default mongoose.model("idea", ideaSchema);
+export default mongoose.models.idea || mongoose.model("idea", ideaSchema);
