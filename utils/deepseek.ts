@@ -2,6 +2,8 @@ import { cleanedType } from "./reddit";
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const agi = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 });
+const asi = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2 });
 
 export const getStructuredJson = async (
   problemJson: (cleanedType | null)[]
@@ -25,6 +27,7 @@ export const getStructuredJson = async (
               description: " a detailed explanation of what the problem is",
             },
           },
+          required: ["title", "description"],
         },
       },
     },
@@ -44,40 +47,32 @@ export const getStructuredJson = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash", // Good for large context, speed, and structured output
-      contents: prompt, // Your combined data + instructions
+      model: "gemini-2.5-flash-lite",
+      contents: prompt,
       config: {
-        // Set the model's 'personality' or core instructions
         systemInstruction:
           "You are an AI that points out painpoints and problems and returns JSON ONLY.",
 
-        // **Guaranteed JSON Output**
         responseMimeType: "application/json",
         responseJsonSchema: structuredProblems,
 
-        // Control creativity and length
         temperature: 0.7,
-        maxOutputTokens: 2048, // Adjusted up for 10 detailed ideas
+        maxOutputTokens: 2048,
       },
     });
 
-    // The model ensures response.text is valid JSON based on the schema
     console.log("Problems");
-    console.log(response);
+    console.log(JSON.parse(response.text ?? "S"));
     return JSON.parse(response.text ?? "something went wrong!");
   } catch (error) {
-    // A common error for large input is 'ResourceExhausted' (Context is too long)
     console.error("API Call failed:", error);
-    //
     console.error(
       "The error may be caused by the large size of the JSON string exceeding the token limit for the model."
     );
     throw error;
   }
-  //   return response;
 };
 
-// Simple chat
 export const listOfIdeas = async (
   problemsJSON: {
     problems: { title: string; description: string }[];
@@ -128,32 +123,26 @@ export const listOfIdeas = async (
   Each generated problem MUST strictly adhere to the required JSON schema for the output.`;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash", // Good for large context, speed, and structured output
-      contents: ideaGenPrompt, // Your combined data + instructions
+      model: "gemini-2.5-flash-lite",
+      contents: ideaGenPrompt,
       config: {
-        // Set the model's 'personality' or core instructions
         systemInstruction:
           "You are an AI that generates detailed tech product ideas and returns JSON ONLY.",
 
-        // **Guaranteed JSON Output**
         responseMimeType: "application/json",
         responseJsonSchema: structuredJson,
 
-        // Control creativity and length
         temperature: 0.7,
-        maxOutputTokens: 8048, // Adjusted up for 10 detailed ideas
+        maxOutputTokens: 8048,
       },
     });
-    // The model ensures response.text is valid JSON based on the schema
     console.log(response.text);
     return JSON.parse(
       response?.text?.replace(/[\u0000-\u001F\u007F]/g, "") ??
         "something went wrong!"
     );
   } catch (error) {
-    // A common error for large input is 'ResourceExhausted' (Context is too long)
     console.error("API Call failed:", error);
-    //
     console.error(
       "The error may be caused by the large size of the JSON string exceeding the token limit for the model."
     );

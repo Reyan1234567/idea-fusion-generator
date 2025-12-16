@@ -17,11 +17,10 @@ import { toast } from "sonner";
 
 export default function Login() {
   const [state, action, pending] = useActionState(login, { message: "" });
-
   useEffect(() => {
     if (state?.success) {
       toast.info("Welcome 👋");
-      redirect("/");
+      redirect("/home");
     } else if (state?.error) {
       toast.error(state.error ?? "Couldn't log you in");
     }

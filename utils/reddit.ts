@@ -1,5 +1,3 @@
-import Chat from "@/models/chat";
-
 type comments = {
   comment: string;
   replies: comments[] | null;

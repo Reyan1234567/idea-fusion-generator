@@ -32,7 +32,11 @@ const ideaSchema = new Schema({
   },
   created_at: {
     type: Date,
-    default: Date.now,
+    default: new Date(),
+  },
+  idea_group: {
+    type: String,
+    required: true,
   },
 });
 
