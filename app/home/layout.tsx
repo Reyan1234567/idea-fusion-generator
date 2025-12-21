@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import { AppSidebar } from "@/components/ui/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
@@ -8,9 +7,8 @@ const layout = ({ children }: { children: React.ReactNode }) => {
     <>
       <SidebarProvider>
         <AppSidebar />
-        <main className="w-full h-screen overflow-hidden relative">
-          <Navbar text={"Spit in your ideas"} />
-          <SidebarTrigger className="absolute left-2 top-2 z-1000"/>
+        <main className="w-full h-screen">
+          <SidebarTrigger className="fixed left-2 top-2" />
           {children}
         </main>
       </SidebarProvider>

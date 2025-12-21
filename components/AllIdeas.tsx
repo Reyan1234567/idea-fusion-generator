@@ -2,16 +2,33 @@
 
 import { useState } from "react";
 import IdeaCard from "./IdeaCard";
+import { PaginationDemo } from "@/components/Pagination";
 import { changeBookMardStatus } from "@/lib/bookmark.action";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { dbIdea } from "@/utils/global";
 
-const AllIdeas = (ideas: dbIdea[]) => {
+const AllIdeas = ({
+  ideas,
+  count,
+  length
+}: {
+  ideas: dbIdea[];
+  count: number;
+  length: number;
+}) => {
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState("0");
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
+
+  if (!page) {
+    throw new Error("page don't exist");
+  }
+  console.log("PAGE NUMBER");
+  console.log();
   const setBookMarked = async (id: string, to: boolean) => {
     try {
       if (!id) throw new Error("No id was given...");
@@ -19,35 +36,47 @@ const AllIdeas = (ideas: dbIdea[]) => {
       setLoading(true);
       await changeBookMardStatus(to, id);
       setLoading(false);
-      toast.info("Idea saved successfully!");
+      if (to) {
+        toast.info("Idea bookmarked successfully!");
+      } else {
+        toast.info("Bookmard removed successfully");
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Something went wrong!");
     }
   };
 
   return (
-    <div className="flex flex-row flex-wrap overflow-y-auto max-h-screen scrollbar-hide gap-4 p-4">
-      {ideas.length === 0 ? (
-        <p className="text-white">No ideas found.</p>
-      ) : (
-        ideas.map((idea, i) => (
-          <div key={i}>
-            <IdeaCard
-            title={idea.title}
-            description={idea.description}
-            targetAudience={idea.target_audience}
-            feasibility={idea.feasibility}
-            isBookmarked={idea.is_bookmarked}
-            onSave={async () => {
-              await setBookMarked(idea._id, !idea.is_bookmarked);
-            }}
-            onDiscuss={() => {
-              router.push("/home");
-            }}
-            isLoading={modal == idea._id && loading}
-          />
-        ))
-      )}
+    <div className="w-full min-h-screen flex flex-col gap-6 px-6 pb-10 pt-6 lg:px-10 scrollbar-hide overflow-y-auto">
+      <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
+        {ideas.length === 0 ? (
+          <p className="col-span-full text-center text-muted-foreground">
+            No ideas found.
+          </p>
+        ) : (
+          ideas.map((idea, i) => (
+            <div key={i}>
+              <IdeaCard
+                title={idea.title}
+                description={idea.description}
+                targetAudience={idea.target_audience}
+                feasibility={idea.feasibility}
+                isBookmarked={idea.is_bookmarked}
+                onSave={async () => {
+                  await setBookMarked(idea._id, !idea.is_bookmarked);
+                }}
+                onDiscuss={() => {
+                  router.push("/home");
+                }}
+                isLoading={modal == idea._id && loading}
+              />
+            </div>
+          ))
+        )}
+      </div>
+      <div className="mt-auto flex justify-center">
+        <PaginationDemo length={count} perPage={length} page={page} />
+      </div>
     </div>
   );
 };

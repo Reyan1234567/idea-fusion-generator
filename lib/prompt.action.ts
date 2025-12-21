@@ -51,11 +51,7 @@ export async function getIdeas(
     console.info("Ideas");
     console.info(ideas);
     const res = await saveIdeas(ideas.ideas);
-    redirect(`home/${res[0].id}`);
-    return {
-      message: "successfully created...",
-      success: true,
-    };
+    redirect(`home/${res[0].idea_group}`);
   } catch (e) {
     console.error(e);
     if (isRedirectError(e)) {

@@ -7,6 +7,7 @@ const page = async ({ params }: { params: { id: string } }) => {
   await connectDB();
   const { id } = await params;
   const ideas = await Ideas.find({ idea_group: id }).lean();
+
   console.log("IDEAS");
   console.log(ideas);
   return (

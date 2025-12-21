@@ -36,16 +36,20 @@ const Prompt = ({ isNew, ideas }: flick) => {
       setLoading(true);
       await changeBookMardStatus(to, id);
       setLoading(false);
-      toast.info("Idea saved successfully!");
+      if (to) {
+        toast.info("Idea bookmarked successfully!");
+      } else {
+        toast.info("Bookmard removed successfully");
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Something went wrong!");
     }
   };
 
   return (
-    <div>
+    <div className="h-full">
       {!isNew && (
-        <div className="w-full flex flex-row flex-wrap justify-center items-center overflow-y-auto max-h-screen scrollbar-hide ">
+        <div className="w-full p-10 justify-center overflow-y-auto max-h-screen scrollbar-hide grid grid-cols-1 xl:grid-cols-2 gap-4">
           {ideas &&
             ideas.map((message, i) => (
               <div key={i}>
@@ -68,7 +72,7 @@ const Prompt = ({ isNew, ideas }: flick) => {
         </div>
       )}
       {isNew && (
-        <div className="w-full h-screen flex justify-center items-center p-20">
+        <div className="w-full h-full flex justify-center items-center px-20">
           <form
             className="flex flex-col gap-4 w-full max-w-4xl"
             action={action}

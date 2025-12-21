@@ -2,7 +2,7 @@ import React from "react";
 
 const Navbar = ({ text }: { text: string }) => {
   return (
-    <div className="w-full h-sm bg-transparent backdrop-blur-md flex justify-center items-center p-5 border-b-2 border-grey-500">
+    <div className="w-full h-sm bg-transparent backdrop-blur-md flex justify-center items-center p-5 border-b-2 border-grey-500 sticky top-0 z-50">
       <p>{text}</p>
     </div>
   );

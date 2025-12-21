@@ -29,12 +29,12 @@ const items = [
   },
   {
     title: "Ideas",
-    url: "/ideas",
+    url: "/home/ideas?page=1&length=10",
     icon: Lightbulb,
   },
   {
     title: "Saved Ideas",
-    url: "/saved",
+    url: "/home/saved",
     icon: Bookmark,
   },
 ];
