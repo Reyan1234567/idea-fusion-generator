@@ -12,17 +12,19 @@ const page = async ({
 }) => {
   await connectDB();
   const userId = (await cookies()).get("user_id");
+  const thePage = Number((await searchParams).page) ?? 1;
   const pageLength = Number((await searchParams).length) ?? 10;
-  const getMySavedIdeas = await Ideas.find({
+  const query = {
     user_id: userId?.value,
     is_bookmarked: true,
-  }).lean();
-  const count = await Ideas.countDocuments({
-    user_id: userId?.value,
-    is_bookmarked: true,
-  });
-  console.log("getMySavedIdeas");
-  console.log(getMySavedIdeas);
+  };
+  const getMySavedIdeas = await Ideas.find(query)
+    .skip((thePage - 1) * pageLength)
+    .limit(pageLength)
+    .lean();
+
+  const count = await Ideas.countDocuments(query);
+
   return (
     <div>
       <Navbar text={"Your saved ideas here"} />

@@ -7,11 +7,13 @@ import { changeBookMardStatus } from "@/lib/bookmark.action";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { dbIdea } from "@/utils/global";
+import Search from "./Search";
+import Link from "next/link";
 
 const AllIdeas = ({
   ideas,
   count,
-  length
+  length,
 }: {
   ideas: dbIdea[];
   count: number;
@@ -48,10 +50,11 @@ const AllIdeas = ({
 
   return (
     <div className="w-full min-h-screen flex flex-col gap-6 px-6 pb-10 pt-6 lg:px-10 scrollbar-hide overflow-y-auto">
+      <Search />
       <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
         {ideas.length === 0 ? (
           <p className="col-span-full text-center text-muted-foreground">
-            No ideas found.
+            No ideas are found,<Link href="/home" className="text-blue-200"> Go create some!</Link>
           </p>
         ) : (
           ideas.map((idea, i) => (

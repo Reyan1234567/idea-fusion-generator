@@ -7,17 +7,32 @@ import { cookies } from "next/headers";
 const page = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ page: string; length: string }>;
+  searchParams: Promise<{ page: string; length: string; search?: string }>;
 }) => {
   await connectDB();
   const userId = (await cookies()).get("user_id");
-  const thePage = Number((await searchParams).page) ?? 1;
-  const pageLength=Number((await searchParams).length) ?? 10;
-  const getMyIdeas = await Ideas.find({ user_id: userId?.value })
-    .skip((thePage - 1) * 10)
-    .limit(10)
+  const thePage = Number((await searchParams).page) || 1;
+  const pageLength = Number((await searchParams).length) || 10;
+  const search = (await searchParams).search;
+  let query = {};
+  if (search) {
+    query = {
+      user_id: userId?.value,
+      $or: [
+        { title: { $regex:  search, $options: "i" }  },
+        { description: { $regex: search, $options: "i"  } },
+        { target_audience: { $regex: search, $options: "i" } },
+      ],
+    };
+  } else {
+    query = { user_id: userId?.value };
+  }
+  const getMyIdeas = await Ideas.find(query)
+    .skip((thePage - 1) * pageLength)
+    .sort({ created_at: -1 })
+    .limit(pageLength)
     .lean();
-  const count = await Ideas.countDocuments({ user_id: userId?.value });
+  const count = await Ideas.countDocuments(query);
   const titles = [
     "Here is you list of ideas",
     "Find and discuss on some gems",
@@ -28,7 +43,7 @@ const page = async ({
   return (
     <div>
       <Navbar text={titles[Math.floor(Math.random() * titles.length)]} />
-      <AllIdeas ideas={getMyIdeas} count={count} length={pageLength}/>
+      <AllIdeas ideas={getMyIdeas} count={count} length={pageLength} />
     </div>
   );
 };

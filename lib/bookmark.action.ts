@@ -15,7 +15,7 @@ export const changeBookMardStatus = async (to: boolean, id: string) => {
     if (!idea) {
       throw new Error("idea not found!");
     }
-    revalidatePath("/home/[id]");
+    revalidatePath("/home");
   } catch (e) {
     throw e;
   }

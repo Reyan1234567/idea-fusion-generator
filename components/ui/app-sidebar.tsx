@@ -34,7 +34,7 @@ const items = [
   },
   {
     title: "Saved Ideas",
-    url: "/home/saved",
+    url: "/home/saved?page=1&length=10",
     icon: Bookmark,
   },
 ];

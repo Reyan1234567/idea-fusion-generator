@@ -28,6 +28,15 @@ export function PaginationDemo({
   const iteration = Math.ceil(length / perPage);
   const router = useRouter();
   const pages = Array.from({ length: iteration }, (_, i) => i);
+  const handleRouting = (pageNumber?: string, pageLength?: string) => {
+    router.replace(
+      `?page=${pageNumber ?? page}&length=${pageLength ?? perPage}`
+    );
+  };
+  const handleSelectChange = (value: string) => {
+    const numValue = Number(value) || 10;
+    handleRouting("1", numValue.toString());
+  };
   return (
     <Pagination>
       <PaginationContent className="w-full flex justify-between">
@@ -36,7 +45,7 @@ export function PaginationDemo({
           <Button
             variant={"outline"}
             disabled={page === 1}
-            onClick={() => router.push(`?page=${Math.max(page - 1, 1)}`)}
+            onClick={() => handleRouting(Math.max(page - 1, 1).toString())}
           >
             <ArrowLeft /> Prev
           </Button>
@@ -45,7 +54,7 @@ export function PaginationDemo({
               <Button
                 variant={i + 1 !== page ? "outline" : "default"}
                 onClick={() => {
-                  router.push(`?page=${i + 1}`);
+                  handleRouting((i + 1).toString());
                 }}
               >
                 {i + 1}
@@ -55,7 +64,7 @@ export function PaginationDemo({
           <Button
             variant={"outline"}
             onClick={() =>
-              router.push(`?page=${Math.min(page + 1, iteration)}`)
+              handleRouting(Math.min(page + 1, iteration).toString())
             }
             disabled={page === iteration}
           >
@@ -64,18 +73,18 @@ export function PaginationDemo({
           </Button>
         </PaginationItem>
         <div className="">
-          <Select>
+          <Select value={perPage.toString()} onValueChange={handleSelectChange}>
             <SelectTrigger className="w-[100px]">
               <SelectValue placeholder="Page Length" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Page length</SelectLabel>
-                <SelectItem value="apple">5</SelectItem>
-                <SelectItem value="banana">10</SelectItem>
-                <SelectItem value="blueberry">15</SelectItem>
-                <SelectItem value="grapes">20</SelectItem>
-                <SelectItem value="pineapple">50</SelectItem>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="15">15</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
