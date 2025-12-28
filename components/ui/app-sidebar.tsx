@@ -1,17 +1,9 @@
-import {
-  Bookmark,
-  Calendar,
-  Home,
-  Inbox,
-  Lightbulb,
-  MessageSquare,
-  Search,
-  Settings,
-} from "lucide-react";
+import { Bookmark, Lightbulb, MessageSquare } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -19,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Profile from "../Profile";
 
 // Menu items.
 const items = [
@@ -61,6 +54,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Profile />
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -1,10 +1,11 @@
+"use client";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
   Select,
@@ -27,11 +28,21 @@ export function PaginationDemo({
 }) {
   const iteration = Math.ceil(length / perPage);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const pages = Array.from({ length: iteration }, (_, i) => i);
   const handleRouting = (pageNumber?: string, pageLength?: string) => {
-    router.replace(
-      `?page=${pageNumber ?? page}&length=${pageLength ?? perPage}`
-    );
+    const search = searchParams.get("search");
+    if (search) {
+      router.replace(
+        `?page=${pageNumber ?? page}&length=${
+          pageLength ?? perPage
+        }&search=${search}`
+      );
+    } else {
+      router.replace(
+        `?page=${pageNumber ?? page}&length=${pageLength ?? perPage}`
+      );
+    }
   };
   const handleSelectChange = (value: string) => {
     const numValue = Number(value) || 10;

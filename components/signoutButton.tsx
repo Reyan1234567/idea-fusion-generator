@@ -6,7 +6,9 @@ import { Button } from "./ui/button";
 const SignoutButton = () => {
   return (
     <form action={signout}>
-      <Button type="submit">Logout and Clear Session</Button>
+      <Button type="submit" className="w-full">
+        Logout
+      </Button>
     </form>
   );
 };

@@ -8,7 +8,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
       <SidebarProvider>
         <AppSidebar />
         <main className="w-full h-screen">
-          <SidebarTrigger className="fixed left-2 top-2" />
+          <SidebarTrigger className="fixed left-2 top-2 z-100"/>
           {children}
         </main>
       </SidebarProvider>

@@ -12,6 +12,7 @@ export type FormState = {
     email?: string;
     password?: string;
   };
+  userId?: string;
 };
 
 export const loginRule = z.object({

@@ -13,7 +13,7 @@ import {
   generateShortLivedSecretKey,
 } from "@/utils/signup.helper";
 export const login = async (
-  prevState: FormState,
+  _: FormState,
   formData: FormData
 ): Promise<FormState> => {
   await connectDB();
@@ -48,6 +48,7 @@ export const login = async (
       return {
         message: "Login successful",
         success: true,
+        userId: user.id,
       };
     } else {
       throw new Error("Invalid credentials");

@@ -14,12 +14,15 @@ import { useActionState, useEffect } from "react";
 import { login } from "@/lib/login.action";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
+import { useUserStore } from "@/store/bearStore";
 
 export default function Login() {
   const [state, action, pending] = useActionState(login, { message: "" });
+  const setId = useUserStore((state) => state.setId);
   useEffect(() => {
     if (state?.success) {
       toast.info("Welcome 👋");
+      setId(state.userId);
       redirect("/home");
     } else if (state?.error) {
       toast.error(state.error ?? "Couldn't log you in");
@@ -45,7 +48,7 @@ export default function Login() {
                 className={state?.errors?.email ? "border-red-500" : ""}
               />
               <p className="text-xs text-red-600">
-                {state?.errors?.email?.errors[0] }
+                {state?.errors?.email?.errors[0]}
               </p>
             </div>
 

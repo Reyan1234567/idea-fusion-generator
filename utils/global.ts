@@ -18,3 +18,6 @@ export type dbIdea = {
   created_at: Date;
   idea_group: string;
 };
+
+export const defaultUnknownPerson =
+  "https://i.pinimg.com/736x/8a/14/fe/8a14fefc276ab576e8ceac207cace638.jpg";

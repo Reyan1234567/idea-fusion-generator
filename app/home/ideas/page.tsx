@@ -14,19 +14,17 @@ const page = async ({
   const thePage = Number((await searchParams).page) || 1;
   const pageLength = Number((await searchParams).length) || 10;
   const search = (await searchParams).search;
-  let query = {};
-  if (search) {
-    query = {
-      user_id: userId?.value,
-      $or: [
-        { title: { $regex:  search, $options: "i" }  },
-        { description: { $regex: search, $options: "i"  } },
-        { target_audience: { $regex: search, $options: "i" } },
-      ],
-    };
-  } else {
-    query = { user_id: userId?.value };
-  }
+  const query = search
+    ? {
+        user_id: userId?.value,
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+          { target_audience: { $regex: search, $options: "i" } },
+        ],
+      }
+    : { user_id: userId?.value };
+
   const getMyIdeas = await Ideas.find(query)
     .skip((thePage - 1) * pageLength)
     .sort({ created_at: -1 })
