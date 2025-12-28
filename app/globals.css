@@ -120,3 +120,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: thin;
+  scrollbar-width: thin;
+  scrollbar-color: grey transparent
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: thin;
+}
+

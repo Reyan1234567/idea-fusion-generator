@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Idea Fusion Generator
+
+A web-based application that generates innovative ideas by fusing user prompts with real-world insights from social media platforms like Reddit. Leveraging AI, it analyzes extracted problems and concepts to produce structured, actionable ideas for creativity and innovation.
+
+## Features
+
+- **Idea Generation**: Input a prompt and optionally a subreddit; the app fetches Reddit data, extracts problems, and uses AI to generate ideas with titles, descriptions, target audiences, and feasibility ratings.
+- **User Authentication**: Secure signup, login, and email verification with JWT-based sessions.
+- **Idea Management**: View, bookmark, and save generated ideas; access them in a personalized dashboard.
+- **Discussion Threads**: Collaborate on ideas with comment-based discussions.
+- **Social Media Integrations**: Pull data from Reddit (posts, comments).
+- **AI-Powered**: Uses Google Gemini (and OpenAI) for natural language processing and idea synthesis.
+- **Responsive UI**: Dark/light mode toggle with a modern interface built on Next.js and Tailwind CSS.
+
+## Tech Stack
+
+- **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS, Radix UI
+- **Backend**: Next.js API routes, server actions
+- **Database**: MongoDB with Mongoose
+- **AI/ML**: Google Gemini API, OpenAI API
+- **Authentication**: JWT, bcrypt, refresh tokens
+- **Integrations**: Reddit API, Nodemailer for emails
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js (v18 or later)
+- MongoDB (local or cloud instance)
+- API keys for Google Gemini
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   git clone <repository-url>
+   cd idea-fusion-generator
+   ```
 
-## Learn More
+2. Install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Set up environment variables:
+   Create a `.env.local` file with:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```
+   MONGODB_URI=your-mongodb-connection-string
+   GEMINI_API_KEY=your-google-gemini-api-key
+   EMAIL_API= your-api-key-from-provider
+   JWT_ACCESS_SECRET=your-jwt-access-token-secret
+   JWT_REFRESH_SECRET=your-jwt-refresh-token-secret
+   ```
 
-## Deploy on Vercel
+4. Run the development server:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Usage
+
+1. Sign up or log in.
+2. Navigate to the home page and enter a prompt (e.g., "Ideas for sustainable urban transport").
+3. Optionally select a subreddit for Reddit data integration.
+4. Generate ideas and explore them.
+5. Bookmark favorites or start discussions.

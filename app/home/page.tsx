@@ -1,13 +1,11 @@
-import { ModeToggle } from "@/components/ModeToggle";
+import Navbar from "@/components/Navbar";
 import Prompt from "@/components/Prompt";
 
 const page = () => {
   return (
-    <div className="h-full flex justify-center items-center p-8">
-      <div className="absolute right-5 top-5">
-        <ModeToggle />
-      </div>
-        <Prompt/>
+    <div className="w-full h-full">
+      <Navbar text={"Spit in your ideas"} />
+      <Prompt isNew={true} />
     </div>
   );
 };

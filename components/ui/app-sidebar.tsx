@@ -1,44 +1,36 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { Bookmark, Lightbulb, MessageSquare } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import Profile from "../Profile";
 
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "New Chat",
+    url: "/home",
+    icon: MessageSquare,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Ideas",
+    url: "/home/ideas?page=1&length=10",
+    icon: Lightbulb,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Saved Ideas",
+    url: "/home/saved?page=1&length=10",
+    icon: Bookmark,
   },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-]
+];
 
 export function AppSidebar() {
   return (
@@ -62,6 +54,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Profile />
+      </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

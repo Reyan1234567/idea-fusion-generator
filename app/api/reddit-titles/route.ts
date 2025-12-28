@@ -1,8 +1,16 @@
+import { connectDB } from "@/lib/mongoose";
 import { getStructuredJson, listOfIdeas } from "@/utils/deepseek";
 import { iteratePosts } from "@/utils/reddit";
 import { NextRequest, NextResponse } from "next/server";
+import Idea from "@/models/ideas";
 
-// const postUrl = "https://www.reddit.com/r/startups/top.json?limit=10&t=week";
+type idea = {
+  title: string;
+  descriptoin: string;
+  feasibility: string;
+  targetAudience: string;
+};
+
 const getPosts = async (subreddit: string | null, time: string | null) => {
   try {
     console.debug("subreddit: ", subreddit);
@@ -17,34 +25,94 @@ const getPosts = async (subreddit: string | null, time: string | null) => {
   }
 };
 
+const saveIdea = async (ideas: idea[]) => {
+  try {
+    for (const idea of ideas) {
+      const newIdea = new Idea({
+        ...idea,
+        created_at: new Date(),
+      });
+      const createdNewIdea = newIdea.save();
+      console.log("New Idea");
+      console.log(createdNewIdea);
+    }
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+};
+
 export async function GET(request: NextRequest) {
   try {
+    await connectDB();
     const searchParams = request.nextUrl.searchParams;
     const subreddit = searchParams.get("subreddit");
     const time = searchParams.get("time");
-
-    const response = await getPosts(subreddit, time);
-    console.log("Response");
-    console.log(response);
-    const realRes = await iteratePosts(response);
-    console.log("RealRes");
-    console.log(realRes);
-    const realRealRes = await getStructuredJson(realRes);
-    console.log("RealRealRes");
-    console.log(realRealRes);
-    const idea = await listOfIdeas(realRealRes);
-    console.log("idea");
-    console.log(idea);
-    return NextResponse.json(idea, { status: 200 });
+    const message = searchParams.get("message");
+    if (!message) {
+      throw new Error("message can't be null");
+    }
+    const id = searchParams.get("id");
+    if (!id) {
+      throw new Error("user_id can't be null");
+    }
+    const posts = await getPosts(subreddit, time);
+    console.info("Posts");
+    console.info(posts);
+    const cleanedPosts = await iteratePosts(posts);
+    console.info("ClenedPosts");
+    console.info(cleanedPosts);
+    const structuredProblemJson = await getStructuredJson(cleanedPosts);
+    console.info("StructuredProblemJson");
+    console.info(structuredProblemJson);
+    const ideas = await listOfIdeas(structuredProblemJson, message);
+    console.info("Ideas");
+    console.info(ideas);
+    await saveIdea(ideas.ideas);
+    return NextResponse.json(ideas, { status: 200 });
   } catch (e) {
     console.error(e);
     if (e instanceof Error) {
       return NextResponse.json(e?.message, { status: 500 });
     } else {
       return NextResponse.json(
-        { message: "Some error occured" },
+        { error: "Internal Server Error: Failed to process ideas." },
         { status: 500 }
       );
+    }
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    await connectDB();
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get("id");
+    const status = searchParams.get("status");
+
+    await Idea.findByIdAndUpdate(
+      id,
+      {
+        is_bookmarked: status === "on" ? true : false,
+      },
+      {
+        new: true,
+      }
+    );
+    return NextResponse.json({
+      message: status === "on" ? "idea bookmarked" : "removed bookmark",
+      status: 204,
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      console.log(e.message);
+      return NextResponse.json({ message: e.message, status: 500 });
+    } else {
+      console.log("some");
+      return NextResponse.json({
+        error: "Some error occured when bookmarking",
+        status: 500,
+      });
     }
   }
 }
